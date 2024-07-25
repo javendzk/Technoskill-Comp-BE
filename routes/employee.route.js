@@ -3,7 +3,7 @@ const employeeController = require("../controllers/employee.controller");
 const router = express.Router();
 
 router.post("/add", employeeController.addEmployee);
-router.get("/", employeeController.getEmployee);
-router.get("/:id", employeeController.getOneEmployee);
+router.post("/get", employeeController.getEmployee);
+// Masukkan rute-rute lain di
 
 module.exports = router;
