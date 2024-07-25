@@ -17,4 +17,4 @@ pool.connect().then(() => {
   console.log(`Connected to Neon database!`);
 });
 
-exports.pool = pool;
+module.exports = pool;
