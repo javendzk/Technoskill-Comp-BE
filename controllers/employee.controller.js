@@ -24,4 +24,11 @@ exports.getEmployee = async function getEmployee(req, res) {
 
 exports.getOneEmployee = async function getOneEmployee(req, res) {
   // Insert kode GET di sini
+  try {
+    const { id } = req.params;
+    const response = await pg.query('SELECT * FROM employee WHERE id = $1', [id]);
+    res.status(200).json(response.rows);
+  } catch (error) {
+    res.status(500).json(error);
+  }
 };
