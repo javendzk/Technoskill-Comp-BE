@@ -6,7 +6,8 @@ CREATE TABLE IF NOT EXISTS manager (
     id UUID NOT NULL DEFAULT GEN_RANDOM_UUID(),
     name TEXT NOT NULL,
     name_business TEXT NOT NULL,
-    password_hash TEXT NOT NULL
+    password_hash TEXT NOT NULL,
+    email TEXT NOT NULL,
 );
 
 CREATE TABLE IF NOT EXISTS employee (
@@ -20,7 +21,8 @@ CREATE TABLE IF NOT EXISTS employee (
     nik_number TEXT,
     address TEXT,
     salary INT,
-    division TEXT
+    division TEXT,
+    email TEXT NOT NULL,
 );
 
 CREATE TABLE IF NOT EXISTS login_logs (

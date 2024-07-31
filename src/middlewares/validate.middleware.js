@@ -4,11 +4,12 @@ const validateMiddleware = [
     (req, res, next) => {
         for (const [key, value] of Object.entries(req.body)) {
             if (key === 'picture_url') {
-                if (value.includes('$') || value.includes(';')) return res.status(400).json("[!] Picture_url mengandung $;");
-
+                if (value.includes('$') || value.includes(';'))
+                    return res.status(400).json('[!] Picture_url mengandung $;');
             } else {
-                if (typeof value === 'string' && !/^[a-zA-Z0-9]*$/.test(value)) return res.status(400).json("[!] Input tidak valid");
-            } 
+                if (typeof value === 'string' && !/^[a-zA-Z0-9@._\- ]*$/.test(value))
+                    return res.status(400).json('[!] Input Dilarang');
+            }
         }
         next();
     },
