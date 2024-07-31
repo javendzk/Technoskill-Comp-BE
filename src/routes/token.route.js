@@ -1,8 +1,9 @@
-const tokenController = require("../controllers/employee.controller.js");
-const validateMiddleware = require("../middlewares/validate.middleware.js");
-const express = require("express");
+const tokenController = require('../controllers/token.controller.js');
+const validateMiddleware = require('../middlewares/validate.middleware.js');
+const authMiddleware = require('../middlewares/auth.middleware.js');
+const express = require('express');
 const router = express.Router();
 
-router.post("/", validateMiddleware, tokenController.fixed);
+router.get('/', [authMiddleware, validateMiddleware], tokenController.fixed);
 
 module.exports = router;
