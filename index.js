@@ -1,3 +1,9 @@
+/*
+  Made for Technoskill 1.0 competition, July-August 2024.
+  Authors: Javana Muhammad, Christian Hadiwijaya, Benedict Aurelius.
+  Stack: Node.js, Express.js, PostgreSQL.
+*/
+
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');

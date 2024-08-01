@@ -5,8 +5,8 @@ const express = require('express');
 const router = express.Router();
 
 router.post('/login', validateMiddleware, employeeController.login);
-router.get('/getByUid', [authMiddleware, validateMiddleware], employeeController.getByUid);
-router.put('/updateByUid', [authMiddleware, validateMiddleware], employeeController.UpdateByUid);
-router.put('/changePassword', [authMiddleware, validateMiddleware], employeeController.changePassword);
+router.get('/getByUid/:id', [authMiddleware, validateMiddleware], employeeController.getByUid);
+router.put('/updateByUid/:id', [authMiddleware, validateMiddleware], employeeController.UpdateByUid);
+router.put('/changePassword/:id', [authMiddleware, validateMiddleware], employeeController.changePassword);
 
 module.exports = router;
