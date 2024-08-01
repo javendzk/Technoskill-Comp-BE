@@ -23,10 +23,9 @@ const authManager = async (body) => {
             { expiresIn: '1h' }
         );
 
-        return { success: true, name: response.rows[0].name, token: token };
-
+        return { success: true, name: response.rows[0].name, id: response.rows[0].id, token: token };
     } catch (error) {
-        return { success: false, message: error.message};
+        return { success: false, message: error.message };
     }
 };
 
@@ -71,7 +70,10 @@ const employeeChangePassword = async (body) => {
         if (!isPasswordValid) throw new Error('Password tidak valid');
 
         const hashedPassword = await bcrypt.hash(new_password, 10);
-        const updateResponse = await pool.query('UPDATE employee SET password_hash = $1 WHERE id = $2 RETURNING *', [hashedPassword, id]);        
+        const updateResponse = await pool.query('UPDATE employee SET password_hash = $1 WHERE id = $2 RETURNING *', [
+            hashedPassword,
+            id,
+        ]);
 
         return { success: true, message: 'Password berhasil diubah', data: updateResponse.rows[0] };
     } catch (Error) {
