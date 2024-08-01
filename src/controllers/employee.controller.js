@@ -25,7 +25,7 @@ exports.login = async (req, res) => {
 
 exports.getByUid = async (req, res) => {
     try {
-        const employeeId = req.params.id;
+        const employeeId = req.user.id;
 
         const { rows: employee } = await pool.query('SELECT * FROM employee WHERE id = $1', [employeeId]);
         if (employee.length === 0) throw new Error('Data employee tidak ditemukan');
@@ -38,7 +38,7 @@ exports.getByUid = async (req, res) => {
 
 exports.UpdateByUid = async (req, res) => {
     try {
-        const employeeId = req.params.id;
+        const employeeId = req.user.id;
         const { name, email, birth_date, nik_number, address, picture_url } = req.body;
 
         const { rows: employee } = await pool.query(
@@ -55,13 +55,12 @@ exports.UpdateByUid = async (req, res) => {
 
 exports.changePassword = async (req, res) => {
     try {
-        const employeeId = req.params.id;
+        const employeeId = req.user.id;
         req.body.id = employeeId;
 
         const response = await auth.employeeChangePassword({ ...req.body }); 
         if (!response.success) throw new Error(response.message);
         response.success = undefined;
-
 
         res.status(200).json({ success: true, message: response.message, data: response.data });
     } catch (error) {
