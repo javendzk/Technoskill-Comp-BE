@@ -6,11 +6,12 @@ exports.login = async (req, res) => {
     try {
         const response = await auth.manager(req.body);
         if (!response.success) throw new Error(response.message);
+        response.success = undefined;
 
-        const logger = await pool.query('INSERT INTO login_logs (role, manager_id) VALUES ($1, $2) RETURNING *', [
-            'manager',
-            response.id,
-        ]);
+        const logger = await pool.query('INSERT INTO login_logs (role, manager_id) VALUES ($1, $2) RETURNING *',
+            ['manager',response.id]
+        );
+        
         if (!logger) console.log('[!] Gagal log login manager');
         res.status(200).json({ success: true, data: response });
     } catch (error) {
@@ -82,12 +83,9 @@ exports.addEmployee = async (req, res) => {
             [name, division, email, salary, hashedPassword, manager_id]
         );
 
-        res.status(200).json({
-            success: true,
-            message: 'Berhasil add employee',
-            data: employee[0],
-            password: password,
-        });
+        employee[0].password = password
+        
+        res.status(200).json({ success: true, message: 'Berhasil add employee', data: employee[0] });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
     }

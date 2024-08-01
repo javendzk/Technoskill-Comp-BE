@@ -60,6 +60,7 @@ const employeeChangePassword = async (body) => {
     try {
         const { id, old_password, new_password } = body;
         console.log(body);
+
         if (!id || !old_password || !new_password) throw new Error('Kurang informasi: id, old_password, new_password');
 
         const response = await pool.query('SELECT * FROM employee WHERE id = $1', [id]);
@@ -67,7 +68,7 @@ const employeeChangePassword = async (body) => {
         if (response.rows.length === 0) throw new Error('Email tdak valid');
 
         const isPasswordValid = await bcrypt.compare(old_password, response.rows[0].password_hash);
-        if (!isPasswordValid) throw new Error('Password tidak valid');
+        if (!isPasswordValid) throw new Error('Password lama tidak valid');
 
         const hashedPassword = await bcrypt.hash(new_password, 10);
         const updateResponse = await pool.query('UPDATE employee SET password_hash = $1 WHERE id = $2 RETURNING *', [
