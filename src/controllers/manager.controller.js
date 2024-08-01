@@ -5,10 +5,14 @@ const bcrypt = require('bcrypt');
 exports.login = async (req, res) => {
     try {
         const response = await auth.manager(req.body);
-        res.status(200).json({ success: true, data: response});
+        if (!response.success) throw new Error(response.message);
 
-        const logger = await pool.query('INSERT INTO login_logs (role, manager_id) VALUES ($1, $2) RETURNING *', ['manager', req.user.id]);
-        if (!logger) console.log ('[!] Gagal log login manager');
+        const logger = await pool.query('INSERT INTO login_logs (role, manager_id) VALUES ($1, $2) RETURNING *', [
+            'manager',
+            response.id,
+        ]);
+        if (!logger) console.log('[!] Gagal log login manager');
+        res.status(200).json({ success: true, data: response });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
     }
@@ -29,7 +33,9 @@ exports.register = async (req, res) => {
             throw new Error('Email sudah registered');
         }
 
-        const { rows: businessCheck } = await pool.query('SELECT * FROM manager WHERE name_business = $1', [name_business]);
+        const { rows: businessCheck } = await pool.query('SELECT * FROM manager WHERE name_business = $1', [
+            name_business,
+        ]);
 
         if (businessCheck.length > 0) {
             throw new Error('Business name sudah registered');
@@ -58,9 +64,10 @@ exports.addEmployee = async (req, res) => {
             throw new Error('Kekuranqan informasi: name, division, email, salary');
         }
 
-        const { rows: emailCheck } = await pool.query('SELECT * FROM employee WHERE email = $1 AND manager_id = $2', 
-            [email, manager_id]
-        );
+        const { rows: emailCheck } = await pool.query('SELECT * FROM employee WHERE email = $1 AND manager_id = $2', [
+            email,
+            manager_id,
+        ]);
 
         if (emailCheck.length > 0) {
             throw new Error('Email sudah terdaftar');
@@ -75,7 +82,12 @@ exports.addEmployee = async (req, res) => {
             [name, division, email, salary, hashedPassword, manager_id]
         );
 
-        res.status(200).json({ success: true, message: 'Berhasil add employee', data: employee[0], password: password });
+        res.status(200).json({
+            success: true,
+            message: 'Berhasil add employee',
+            data: employee[0],
+            password: password,
+        });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
     }
@@ -85,7 +97,7 @@ exports.getLogsByManager = async (req, res) => {
     try {
         const manager_id = req.user.id;
 
-        const { rows: loginLogs }  = await pool.query('SELECT * FROM login_logs WHERE manager_id = $1', [manager_id]);
+        const { rows: loginLogs } = await pool.query('SELECT * FROM login_logs WHERE manager_id = $1', [manager_id]);
 
         res.status(200).json({ success: true, message: 'Berhasil retrieve logs manager', data: loginLogs });
     } catch (error) {
@@ -98,7 +110,7 @@ exports.getAllEmployeeByManager = async (req, res) => {
         const manager_id = req.user.id;
 
         const { rows: managerCheck } = await pool.query('SELECT * FROM manager WHERE id = $1', [manager_id]);
-        
+
         if (managerCheck.length === 0) {
             throw new Error('Access denied, anda bukan manager');
         }
@@ -115,9 +127,10 @@ exports.getEmployeeByUid = async (req, res) => {
         const employeeId = req.params.id;
         const manager_id = req.user.id;
 
-        const { rows: employeeCheck } = await pool.query('SELECT * FROM employee WHERE id = $1 AND manager_id = $2', 
-            [employeeId,manager_id]
-        );
+        const { rows: employeeCheck } = await pool.query('SELECT * FROM employee WHERE id = $1 AND manager_id = $2', [
+            employeeId,
+            manager_id,
+        ]);
 
         if (employeeCheck.length === 0) {
             throw new Error('Employee tidak ketemu');
@@ -140,15 +153,17 @@ exports.updateEmployeeByUid = async (req, res) => {
             throw new Error('Kekurangan informasi : name, division, email, salary');
         }
 
-        const { rows: employeeCheck } = await pool.query('SELECT * FROM employee WHERE id = $1 AND manager_id = $2',
-            [employeeId, manager_id]
-        );
-        
+        const { rows: employeeCheck } = await pool.query('SELECT * FROM employee WHERE id = $1 AND manager_id = $2', [
+            employeeId,
+            manager_id,
+        ]);
+
         if (employeeCheck.length === 0) {
             throw new Error('Employee tidak ketemu');
         }
 
-        const { rows: employee } = await pool.query('UPDATE employee SET division = $1, salary = $2 WHERE id = $3 RETURNING *',
+        const { rows: employee } = await pool.query(
+            'UPDATE employee SET division = $1, salary = $2 WHERE id = $3 RETURNING *',
             [division, salary, employeeId]
         );
 
@@ -163,17 +178,17 @@ exports.deleteEmployeeByUid = async (req, res) => {
         const employeeId = req.params.id;
         const manager_id = req.user.id;
 
-        const { rows: employeeCheck } = await pool.query('SELECT * FROM employee WHERE id = $1 AND manager_id = $2',
-            [employeeId, manager_id]
-        )
-        ;
+        const { rows: employeeCheck } = await pool.query('SELECT * FROM employee WHERE id = $1 AND manager_id = $2', [
+            employeeId,
+            manager_id,
+        ]);
         if (employeeCheck.length === 0) {
             throw new Error('Employee tidak ketemu');
         }
 
         await pool.query('DELETE FROM employee WHERE id = $1', [employeeId]);
 
-        res.status(200).json({ success: true, message: 'Berhasil hapus employee'});
+        res.status(200).json({ success: true, message: 'Berhasil hapus employee' });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
     }

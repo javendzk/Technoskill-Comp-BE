@@ -4,13 +4,17 @@ const { auth } = require('../services/auth.services');
 exports.login = async (req, res) => {
     try {
         const response = await auth.employee(req.body);
-        res.status(200).json({ success: true, data: response });
 
         const employee = await pool.query('SELECT * FROM employee where id = $1', [req.user.id]);
         if (employee.rows.length === 0) console.error('[!] Data employee tidak ditemukan dari logging');
 
-        const logger = await pool.query('INSERT INTO login_logs (role, manager_id) VALUES ($1, $2) RETURNING *', ['employee', employee.rows[0].manager_id]);
+        const logger = await pool.query('INSERT INTO login_logs (role, manager_id) VALUES ($1, $2) RETURNING *', [
+            'employee',
+            employee.rows[0].manager_id,
+        ]);
         if (!logger) console.error('[!] Gagal log login employee');
+
+        res.status(200).json({ success: true, data: response });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
     }
@@ -50,6 +54,6 @@ exports.changePassword = async (req, res) => {
         const response = await auth.employeeChangePassword({ id, ...req.body }); //ini '...' maksudnya apakah yan
         res.status(200).json({ success: true, data: response });
     } catch (error) {
-        res.status(500).json({ success: false,  error: error.message });
+        res.status(500).json({ success: false, error: error.message });
     }
 };
