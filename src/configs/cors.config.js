@@ -1,5 +1,5 @@
 const corsOptions = {
-    origin: '*', //besok janlup setting cors biar bener
+    origin: 'https://tsmanager.vercel.app/', 
     methods: ['GET', 'POST', 'PUT', 'DELETE'], 
 };
 

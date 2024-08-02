@@ -55,7 +55,7 @@ const welcomeMessage = `
     <body>
         <div class="container">
             <h1>Teggnoskyl<span class="dot">■</span></h1>
-            <p>Are you lost, my guy? Return <a href="https://teggnoskyl-dashboard.vercel.app/">here</a></p>
+            <p>Are you lost, my guy? Return <a href="https://tsmanager.vercel.app/">here</a></p>
         </div>
     </body>
 </html>`;
