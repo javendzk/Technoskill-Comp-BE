@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS employee (
 CREATE TABLE IF NOT EXISTS login_logs (
     serial SERIAL PRIMARY KEY,
     role userRole NOT NULL,
+    name TEXT NOT NULL,
     manager_id TEXT NOT NULL,
     time TIMESTAMP NOT NULL DEFAULT NOW()
 );
