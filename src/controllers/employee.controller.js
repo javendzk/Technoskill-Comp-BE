@@ -2,19 +2,20 @@ const { pool } = require('../configs/pool.config');
 const { auth } = require('../services/auth.services');
 
 exports.login = async (req, res) => {
-    try {       
+    try {
         const { email } = req.body;
 
         const response = await auth.employee(req.body);
         if (!response.success) throw new Error(response.message);
         response.success = undefined;
-        
-        const {rows: employee }= await pool.query('SELECT * FROM employee where email = $1', [email]);
+
+        const { rows: employee } = await pool.query('SELECT * FROM employee where email = $1', [email]);
         if (employee.length === 0) console.error('[!] Data employee tidak ditemukan dari logging');
 
-        const logger = await pool.query('INSERT INTO login_logs (role, manager_id) VALUES ($1, $2) RETURNING *',
-            ['employee', employee[0].manager_id]
-        );
+        const logger = await pool.query('INSERT INTO login_logs (role, manager_id) VALUES ($1, $2) RETURNING *', [
+            'employee',
+            employee[0].manager_id,
+        ]);
         if (!logger) console.error('[!] Gagal log login employee');
 
         res.status(200).json({ success: true, data: response });
@@ -40,6 +41,7 @@ exports.UpdateByUid = async (req, res) => {
     try {
         const employeeId = req.user.id;
         const { name, email, birth_date, nik_number, address, picture_url } = req.body;
+        console.log('employeeId', req.body);
 
         const { rows: employee } = await pool.query(
             'UPDATE employee SET name = $1, email = $2, birth_date = $3, nik_number = $4, address = $5, picture_url = $6 WHERE id = $7 RETURNING *',
@@ -58,7 +60,7 @@ exports.changePassword = async (req, res) => {
         const employeeId = req.user.id;
         req.body.id = employeeId;
 
-        const response = await auth.employeeChangePassword({ ...req.body }); 
+        const response = await auth.employeeChangePassword({ ...req.body });
         if (!response.success) throw new Error(response.message);
         response.success = undefined;
 
