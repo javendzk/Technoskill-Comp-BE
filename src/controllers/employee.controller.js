@@ -12,10 +12,11 @@ exports.login = async (req, res) => {
         const { rows: employee } = await pool.query('SELECT * FROM employee where email = $1', [email]);
         if (employee.length === 0) console.error('[!] Data employee tidak ditemukan dari logging');
 
-        const logger = await pool.query('INSERT INTO login_logs (role, manager_id) VALUES ($1, $2) RETURNING *', [
-            'employee',
-            employee[0].manager_id,
-        ]);
+        const logger = await pool.query(
+            'INSERT INTO login_logs (role, name, manager_id) VALUES ($1, $2, $3) RETURNING *',
+            ['employee', employee[0].name, employee[0].manager_id]
+        );
+
         if (!logger) console.error('[!] Gagal log login employee');
 
         res.status(200).json({ success: true, data: response });

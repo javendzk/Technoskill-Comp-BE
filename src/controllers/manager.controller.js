@@ -8,10 +8,10 @@ exports.login = async (req, res) => {
         if (!response.success) throw new Error(response.message);
         response.success = undefined;
 
-        const logger = await pool.query('INSERT INTO login_logs (role, manager_id) VALUES ($1, $2) RETURNING *', [
-            'manager',
-            response.id,
-        ]);
+        const logger = await pool.query(
+            'INSERT INTO login_logs (role, name, manager_id) VALUES ($1, $2, $3) RETURNING *',
+            ['manager', response.name, response.id]
+        );
 
         if (!logger) console.log('[!] Gagal log login manager');
         res.status(200).json({ success: true, data: response });
