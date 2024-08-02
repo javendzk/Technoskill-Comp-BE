@@ -7,7 +7,7 @@ const validateMiddleware = [
                 if (value.includes('$') || value.includes(';'))
                     return res.status(400).json({ success: false, message: 'Picture_url mengandung $;' });
             } else {
-                if (typeof value === 'string' && !/^[a-zA-Z0-9@._\-:/ ]*$/.test(value))
+                if (typeof value === 'string' && !/^[a-zA-Z0-9@._\-,():/ ]*$/.test(value))
                     return res.status(400).json({ success: false, message: 'Input hanya a-Z 0-9' });
             }
         }
